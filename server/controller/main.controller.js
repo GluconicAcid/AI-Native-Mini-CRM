@@ -1,4 +1,6 @@
 import Customer from "../models/customers.model.js";
+import Campaign from "../models/campaign.model.js";
+import Event from "../models/event.model.js";
 import { buildMongoDBQuery } from "../utils/buildMongoDBQuery.js";
 import { extractInfoFromPrompt } from "../utils/extractInfoFromPrompt.js";
 
@@ -53,15 +55,15 @@ const handleTheRequest = async (req, res) => {
 
             await Promise.all(
                 batch.map(user => {
-                    return fetch("http://localhost:5001/send", {
+                    return fetch("http://localhost:8000/send", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
                             userId: user._id,
-                            channel,
-                            content: content.replace("{{name}}", user.name || "there"),
+                            channel: message.channel,
+                            content: message.content.replace("{{name}}", user.name || "there"),
                             campaignId: campaign._id
                         })
                     });
@@ -81,27 +83,27 @@ const getStats = async (req, res) => {
     try {
         const { campaignId } = req.params;
 
-        const totalSent = await Communication.countDocuments({
+        const totalSent = await Event.countDocuments({
             campaignId,
             status: "sent"
         });
 
-        const delivered = await Communication.countDocuments({
+        const delivered = await Event.countDocuments({
             campaignId,
             status: "delivered"
         });
 
-        const opened = await Communication.countDocuments({
+        const opened = await Event.countDocuments({
             campaignId,
             status: "opened"
         });
 
-        const clicked = await Communication.countDocuments({
+        const clicked = await Event.countDocuments({
             campaignId,
             status: "clicked"
         });
 
-        const failed = await Communication.countDocuments({
+        const failed = await Event.countDocuments({
             campaignId,
             status: "failed"
         });

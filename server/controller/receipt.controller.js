@@ -1,3 +1,5 @@
+import Event from "../models/event.model.js";
+
 const receipt = async (req, res) => {
     try {
         const { userId, campaignId, channel, status, date } = req.body;
@@ -19,3 +21,5 @@ const receipt = async (req, res) => {
         return res.status(500).json({ success: false });
     }
 };
+
+export default receipt;

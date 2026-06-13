@@ -1,5 +1,3 @@
-import fetch from "node-fetch";
-
 const channelServiceSimulation = async (req, res) => {
     try {
         const { userId, channel, content, campaignId } = req.body;
