@@ -1,11 +1,26 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getBestCampaignLearnings } from "./getBestCampaignLearnings.js";
 
 export const extractInfoFromPrompt = async (userPrompt) => {
    const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 
-   const model = genAI.getGenerativeModel({model: "gemini-3-flash-preview"});
+   const model = genAI.getGenerativeModel({
+      model: "gemini-3-flash-preview",
+      generationConfig: {
+         responseMimeType: "application/json"
+      }
+   });
+
+   const learnings = await getBestCampaignLearnings();
 
    const prompt = `You are a CRM AI.
+
+   You are given past campaign performance insights. Use them to improve the next campaign.
+
+   PAST LEARNINGS:
+
+   What worked well: ${learnings.map(l => l.positives).flat().join(", ")}
+   What failed: ${learnings.map(l => l.issues).flat().join(", ")} 
 
    Given a goal, identify the core marketing strategy components.
 
@@ -56,7 +71,7 @@ export const extractInfoFromPrompt = async (userPrompt) => {
       "message": {
          "channel": "",
          "content": ""
-      },
+      }
    }
 
    Rules:
