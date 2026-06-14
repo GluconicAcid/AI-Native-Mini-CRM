@@ -1,9 +1,8 @@
-import { checkHealth, launchCampaign, getCampaignStats } from "./api.js";
+import { launchCampaign, getCampaignStats } from "./api.js";
 
 const promptInput = document.getElementById("campaign-prompt");
 const launchBtn = document.getElementById("launch-btn");
 const campaignResults = document.getElementById("campaign-results");
-const apiStatus = document.getElementById("api-status");
 const toastContainer = document.getElementById("toast-container");
 const statsContent = document.getElementById("stats-content");
 const statsCampaignLabel = document.getElementById("stats-campaign-label");
@@ -377,15 +376,7 @@ launchBtn.addEventListener("click", async () => {
   }
 });
 
-async function init() {
-  const online = await checkHealth();
-  apiStatus.textContent = online ? "connected" : "offline";
-  apiStatus.className = online ? "online" : "offline";
-
-  if (!online) {
-    showToast("Backend is not reachable. Start the server on port 8000.", "error");
-  }
-
+function init() {
   updateStatsHeader(null);
   showStatsEmpty();
 }

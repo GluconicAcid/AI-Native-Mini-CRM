@@ -21,15 +21,6 @@ async function request(path, options = {}) {
   return data;
 }
 
-export async function checkHealth() {
-  try {
-    const response = await fetch(`${API_BASE}/campaign`, { method: "OPTIONS" });
-    return response.status !== 0;
-  } catch {
-    return false;
-  }
-}
-
 export async function launchCampaign(prompt) {
   return request("/campaign", {
     method: "POST",

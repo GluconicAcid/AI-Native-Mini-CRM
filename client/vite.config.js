@@ -5,7 +5,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/campaign": {
-        target: "http://localhost:8000",
+        target: "https://ai-native-mini-crm-dq9h.onrender.com",
         changeOrigin: true,
       },
     },
