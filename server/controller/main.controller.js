@@ -100,7 +100,11 @@ const handleTheRequest = async (req, res) => {
         return res.status(200).json({
             message: "Campaign started",
             audienceSize: users.length,
-            success: true
+            success: true,
+            campaignId: campaign._id,
+            campaignMessage: message.content,
+            channel: message.channel,
+            goal: parsedExtractedInfo.goal,
         });
 
     } catch (error) {

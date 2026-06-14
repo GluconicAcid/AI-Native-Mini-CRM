@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Native Mini CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="/assets/index-pXgavX1X.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CpOufM7y.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">AI</div>
+        <div>
+          <h1>Mini CRM</h1>
+          <p>AI-native campaigns</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button type="button" class="nav-btn active" data-view="launch">
+          <span class="nav-icon">🚀</span>
+          Launch Campaign
+        </button>
+        <button type="button" class="nav-btn" data-view="stats">
+          <span class="nav-icon">📊</span>
+          Campaign Stats
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>Backend: <span id="api-status">checking…</span></p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="view-launch" class="view active">
+        <header class="page-header">
+          <div>
+            <h2>Launch a Campaign</h2>
+            <p>Describe your goal in plain language. AI will segment customers and send messages.</p>
+          </div>
+        </header>
+
+        <div class="card prompt-card">
+          <label for="campaign-prompt">Campaign prompt</label>
+          <textarea
+            id="campaign-prompt"
+            rows="6"
+            placeholder="Example: Re-engage customers who haven't ordered in 60 days with a 15% discount via email."
+          ></textarea>
+
+          <div class="prompt-examples">
+            <span>Try:</span>
+            <button type="button" class="chip" data-example="Send a welcome offer to first-time buyers who spent over $50.">
+              First-time buyers
+            </button>
+            <button type="button" class="chip" data-example="Win back inactive users with no orders in the last 90 days using WhatsApp.">
+              Win-back WhatsApp
+            </button>
+            <button type="button" class="chip" data-example="Promote a flash sale to email subscribers with 3+ orders.">
+              Loyal subscribers
+            </button>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="launch-btn" class="btn btn-primary">
+              <span class="btn-label">Launch Campaign</span>
+              <span class="spinner hidden"></span>
+            </button>
+          </div>
+        </div>
+
+        <div id="campaign-results" class="campaign-results hidden"></div>
+      </section>
+
+      <section id="view-stats" class="view">
+        <header class="page-header">
+          <div>
+            <h2>Campaign Stats</h2>
+            <p>Live metrics and AI insights for your active campaign.</p>
+          </div>
+        </header>
+
+        <div class="card">
+          <div class="stats-header">
+            <div>
+              <h3 id="stats-campaign-label">No campaign selected</h3>
+              <p id="stats-campaign-meta"></p>
+            </div>
+            <button type="button" id="refresh-stats-btn" class="btn btn-secondary" disabled>
+              <span class="btn-label">Refresh stats</span>
+              <span class="spinner hidden"></span>
+            </button>
+          </div>
+        </div>
+
+        <div id="stats-campaign-info" class="stats-campaign-info hidden"></div>
+
+        <div id="stats-content" class="stats-dashboard">
+          <div class="stats-empty">
+            <p>Launch a campaign or enter a campaign ID to view stats.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+</body>
+</html>
