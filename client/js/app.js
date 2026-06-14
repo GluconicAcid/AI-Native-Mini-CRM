@@ -60,6 +60,16 @@ function stopStatsPolling() {
   }
 }
 
+function normalizeLaunchData(data, prompt) {
+  return {
+    ...data,
+    prompt,
+    campaignMessage: data.campaignMessage ?? data.campaign_message ?? null,
+    channel: data.channel ?? null,
+    goal: data.goal ?? null,
+  };
+}
+
 function renderCampaignMessageBlock(launchData) {
   if (!launchData?.campaignMessage) return "";
 
@@ -75,18 +85,37 @@ function renderCampaignMessageBlock(launchData) {
   `;
 }
 
+function renderPromptBlock(prompt) {
+  if (!prompt) return "";
+
+  return `
+    <div class="campaign-message">
+      <span class="campaign-message-label">Your prompt</span>
+      <p>${prompt}</p>
+    </div>
+  `;
+}
+
+function renderCampaignDetails(launchData) {
+  if (!launchData) return "";
+
+  return `
+    ${launchData.goal ? `<p class="campaign-goal"><strong>Goal:</strong> ${launchData.goal}</p>` : ""}
+    ${renderCampaignMessageBlock(launchData)}
+    ${!launchData.campaignMessage ? renderPromptBlock(launchData.prompt) : ""}
+  `;
+}
+
 function renderLaunchSummary(launchData, prompt) {
+  const details = renderCampaignDetails(launchData);
+
   return `
     <div class="card campaign-summary result-success">
       <h3>${launchData.message || "Campaign started"}</h3>
       <p>Audience: <strong>${launchData.audienceSize?.toLocaleString() ?? "—"}</strong> customers</p>
       ${launchData.campaignId ? `<p>Campaign ID: <code>${launchData.campaignId}</code></p>` : ""}
-      ${launchData.goal ? `<p class="campaign-goal"><strong>Goal:</strong> ${launchData.goal}</p>` : ""}
-      ${renderCampaignMessageBlock(launchData)}
-      <div class="campaign-message">
-        <span class="campaign-message-label">Your prompt</span>
-        <p>${prompt}</p>
-      </div>
+      ${details ? `<div class="campaign-details">${details}</div>` : ""}
+      ${launchData.campaignMessage ? renderPromptBlock(prompt) : ""}
       <p class="stats-hint">Stats are loading in the <button type="button" class="link-btn" id="go-to-stats-btn">Campaign Stats</button> tab.</p>
     </div>
   `;
@@ -181,14 +210,10 @@ function updateStatsHeader(campaignId, launchData = null) {
 }
 
 function renderStatsCampaignInfo(launchData) {
-  if (!launchData?.campaignMessage) return "";
+  const details = renderCampaignDetails(launchData);
+  if (!details) return "";
 
-  return `
-    <div class="card campaign-info-card">
-      ${launchData.goal ? `<p class="campaign-goal"><strong>Goal:</strong> ${launchData.goal}</p>` : ""}
-      ${renderCampaignMessageBlock(launchData)}
-    </div>
-  `;
+  return `<div class="card campaign-info-card">${details}</div>`;
 }
 
 function showStatsLoading() {
@@ -289,7 +314,12 @@ function renderStatsCampaignInfoPanel(launchData) {
 }
 
 navButtons.forEach((btn) => {
-  btn.addEventListener("click", () => switchView(btn.dataset.view));
+  btn.addEventListener("click", () => {
+    switchView(btn.dataset.view);
+    if (btn.dataset.view === "stats" && activeLaunchData) {
+      renderStatsCampaignInfoPanel(activeLaunchData);
+    }
+  });
 });
 
 document.querySelectorAll(".chip").forEach((chip) => {
@@ -322,9 +352,10 @@ launchBtn.addEventListener("click", async () => {
   try {
     const data = await launchCampaign(prompt);
     const campaignId = data.campaignId?.toString?.() ?? data.campaignId;
+    const launchData = normalizeLaunchData(data, prompt);
 
     campaignResults.classList.remove("hidden");
-    campaignResults.innerHTML = renderLaunchSummary(data, prompt);
+    campaignResults.innerHTML = renderLaunchSummary(launchData, prompt);
 
     document.getElementById("go-to-stats-btn")?.addEventListener("click", () => {
       switchView("stats");
@@ -333,7 +364,7 @@ launchBtn.addEventListener("click", async () => {
     showToast("Campaign launched successfully.", "success");
 
     if (campaignId) {
-      beginStatsTracking(campaignId, data);
+      beginStatsTracking(campaignId, launchData);
       switchView("stats");
     } else {
       showToast("Campaign started but no ID was returned — stats unavailable.", "error");
